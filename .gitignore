@@ -1,0 +1,8 @@
+html/wp-admin/*
+html/wp-includes/*
+html/wp-content/languages/*
+html/wp-content/plugins/*
+html/wp-content/uploads/*
+html/wp-content/twentytwenty/*
+terraform/*
+mysql/*

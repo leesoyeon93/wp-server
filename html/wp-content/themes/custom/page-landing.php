@@ -1,8 +1,7 @@
 <?php 
 /*
-Template name: Page - Landing
+Template Name: page landing
 */
-
 
 // wp_create_user( $username, $password, $email );
 
@@ -11,7 +10,9 @@ Template name: Page - Landing
 // 	'user_pass' => $password,
 // 	'role' => 'subscriber'
 // ));
-// ?>
+// 
+
+?>
 
 
 <style>

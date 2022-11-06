@@ -17,6 +17,7 @@
 get_header();
 ?>
 
+
 <main id="site-content">
 
 	<?php
@@ -117,3 +118,9 @@ get_header();
 
 <?php
 get_footer();
+?>
+
+
+
+<a href=<?php echo github_login()?>>github</a>
+<a href=<?php echo google_login()?>>google</a>

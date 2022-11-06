@@ -850,15 +850,74 @@ function register_add_callback($request_data){
 @ini_set( 'post_max_size', '64M');
 @ini_set( 'max_execution_time', '300' );
 
+//load page-google.php
+// global $wpdb;
+// $result =  $wpdb->get_results( 'SELECT * FROM wp_users where user_login like wordpress', OBJECT );
 
-/***********************************************************************************************
- * nextend social login 
- * https://nextendweb.com/nextend-social-login-docs/backend-developer/
- ***********************************************************************************************/
 
-// if(!isset($_SERVER["HTTPS"])){
-// 	header("Location: http://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
-// 	exit();	
-// }
+function github_login(){
 
-http://localhost:8000/wp-login.php
+	$github_client_id = "192f2bd885c08a5102e1";
+	$github_client_secret = "99af620635f7a97498bc6f7411470c4f382e3c21";
+	$github_callback_url = "http://localhost:8000/page-github";
+
+	$github_login_url = "https://github.com/login/oauth/authorize?client_id=".$github_client_id."&redirect_uri=".$github_callback_url;
+	return $github_login_url;
+}
+
+
+function google_login(){
+
+	$google_client_id = "87247861232-tb2lq6qtoh7lhp5c40a0ljfhmpda3m3a.apps.googleusercontent.com";
+	$google_client_secret = "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";
+	$google_callback_url = "http://localhost:8000/page-google";
+
+	$google_login_url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=".$google_client_id."&redirect_uri=".$google_callback_url."&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email";
+	return $google_login_url;
+}
+
+
+
+// wp_enqueue_script(
+// 	'github-login',
+// 	get_stylesheet_directory_uri() . '/assets/js/github-login.js',
+// 	array('jquery'),
+// 	filemtime( get_stylesheet_directory() . '/assets/js/github-login.js' ),
+// 	true
+// );
+// wp_localize_script( 'github-login', 'githubAjax', array( 'ajaxurl' => admin_url('admin-ajax.php') ) );
+
+// add_action( 'wp_ajax_nopriv_ttmik_filter_by_slug', 'ttmik_filter_by_slug' );
+// add_action( 'wp_ajax_ttmik_filter_by_slug', 'ttmik_filter_by_slug' );
+
+// function ttmik_filter_by_slug(){
+
+
+
+	// $github_client_id = "192f2bd885c08a5102e1";
+	// $github_client_secret = "99af620635f7a97498bc6f7411470c4f382e3c21";
+
+	// $url = "https://github.com/login/oauth/access_token";
+
+	// if (isset($_GET['code'])) {
+	// 	    $code = $_GET['code'];
+	// 	    $data = array(
+	// 	        'client_id' => $github_client_id,
+	// 	        'client_secret' => $github_client_secret,
+	// 	        'code' => $code
+	// 	    );
+	// 	    $options = array(
+	// 	        'http' => array(
+	// 	            'header' => "Content-type: application/json",
+	// 	            'method' => 'POST',
+	// 	            'content' => json_encode($data)
+	// 	        )
+	// 	    );
+	// 	    $context = stream_context_create($options);
+	// 	    $result = file_get_contents($url, true, $context);
+	// 	    $result = json_decode($result);
+	// 	    var_dump( $result);
+	// 	    exit; 
+						
+	// 	  }
+	// 	}

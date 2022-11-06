@@ -29,13 +29,6 @@ if(isset($_GET['code'])){
   
   echo "<br>-----------token ----------------<br><br>";
 
-    $data = array(
-        'code' => $_GET['code'],
-        'client_id' => $client_id,
-        'client_secret' => $client_secret,
-        'redirect_uri' => $redirect_url,
-        '&grant_type' => 'authorization_code'
-    );
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
@@ -75,7 +68,6 @@ if(isset($_GET['code'])){
 
       $method = "GET";
 
-
       $url = "https://www.googleapis.com/gmail/v1/users/me/profile";
 
       $ch = curl_init();                                 //curl 초기화
@@ -87,10 +79,10 @@ if(isset($_GET['code'])){
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);  //메소드 지정하기
       curl_setopt($ch, CURLOPT_HTTPHEADER, $header);     //헤더 지정하기
    
+      $userInfo = curl_exec($ch);
       
-      $response2 = curl_exec($ch);
-      
-      var_dump($response2);
+      var_dump($userInfo);
+
 
 }
 

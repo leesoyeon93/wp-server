@@ -868,12 +868,21 @@ function github_login(){
 
 function google_login(){
 
-	$google_client_id = "87247861232-tb2lq6qtoh7lhp5c40a0ljfhmpda3m3a.apps.googleusercontent.com";
-	$google_client_secret = "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";
-	$google_callback_url = "http://localhost:8000/page-google";
+	$client_id = "87247861232-tb2lq6qtoh7lhp5c40a0ljfhmpda3m3a.apps.googleusercontent.com";
+	$client_secret = "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";
+	$redirect_url = "http://localhost:8000/page-google";
+	$scope = "https://mail.google.com/";
 
-	$google_login_url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=".$google_client_id."&redirect_uri=".$google_callback_url."&response_type=code&scope=https://www.googleapis.com/auth/userinfo.email";
-	return $google_login_url;
+	$addr = 'https://accounts.google.com/o/oauth2/v2/auth'
+	.'?client_id='.$client_id
+	.'&redirect_uri='. urlencode($redirect_url)
+	.'&response_type=code'
+	.'&scope='.urlencode($scope)
+	.'&access_type=offline'
+	.'&include_granted_scopes=true';
+	return $addr;
+
+	// header('Location: '.$addr);
 }
 
 

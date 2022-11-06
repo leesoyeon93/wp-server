@@ -6,7 +6,7 @@ Template Name: page google
 // https://velog.io/@young224/Google-OAuth-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84
 // https://nicgoon.tistory.com/208
 
-// 주요 값들.
+// 주요 값들
 $client_id = "87247861232-tb2lq6qtoh7lhp5c40a0ljfhmpda3m3a.apps.googleusercontent.com";
 $client_secret = "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";
 $redirect_url = "http://localhost:8000/page-google";
@@ -17,166 +17,83 @@ $scope = "https://www.googleapis.com/auth/gmail.readonly";
 /**
  * https://accounts.google.com/o/oauth2/v2/auth 
  * https://www.googleapis.com/auth/gmail
- *  /oauth2/v4/token
+ * https://www.daimto.com/how-to-get-a-google-access-token-with-curl/
  */
 echo "받은 code & scope <br>";
 
 print_r($_GET);
 echo "<br>---------------------------<br><br>";
 
+// access token 받기
+if(isset($_GET['code'])){
+  
+  echo "<br>-----------token ----------------<br><br>";
 
-// 보낼 쿼리 만들기.
-$sendQuery = ""
-. "code=" . $_GET['code']
-. "&client_id=" . $client_id
-. "&client_secret=" . $client_secret
-. "&redirect_uri=" . urlencode( $redirect_url )
-. "&grant_type=authorization_code"
-;
+    $data = array(
+        'code' => $_GET['code'],
+        'client_id' => $client_id,
+        'client_secret' => $client_secret,
+        'redirect_uri' => $redirect_url,
+        '&grant_type' => 'authorization_code'
+    );
+    $curl = curl_init();
 
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://www.googleapis.com/oauth2/v4/token',
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_POSTFIELDS => http_build_query([
+            'code' => $_GET['code'],
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'redirect_uri' => $redirect_url,
+            'grant_type' => 'authorization_code',
+        ]),
+    ));
 
-// 보낼 데이터를 만들어 주기 위한 기본값을 설정합니다.
-$endline = "\r\n";
-$req = "";
-
-
-// 구글에서 요청한 필수 헤더를 추가합니다.
-$req = "POST /oauth2/v4/token HTTP/1.0" . $endline
-. "Host: www.googleapis.com" . $endline
-. "Content-Type: application/x-www-form-urlencoded" . $endline
-;
-
-
-// POST 데이터를 보내기 위한 기본 헤더를 추가힙니다.
-$req .= "Content-Length: " . strlen($sendQuery) . $endline
-. "Connection: Close" . $endline
-;
-
-// 헤더의 끝을 표시하는 빈 문자열을 설정합니다.
-$req .= $endline;
-
-// 내용을 추가해 보내어 줍니다.
-$req .= $sendQuery;
-;
-
-// 해당 구글 서버와 연결을 시도합니다.
-$fsock = @fsockopen( "ssl://www.googleapis.com", 443 );
-
-// 구글 서버에 접속 실패한 경우.
-if( !$fsock )
-{
-    echo "구글 서버에 접속 실패하였습니다.!";
-    exit;
-}
-
-// 데이터 보내기를 합니다.
-fwrite( $fsock, $req );
+    $response = curl_exec($curl);
+    $access_token = json_decode($response)->access_token;
+    $token_type = json_decode($response)->token_type;
+    $expires_in = json_decode($response)->expires_in;
+    $id_token = json_decode($response)->id_token;
 
 
-// 데이터 받기를 위해 필요한 값들을 선언합니다.
-$headPassed = false;
-$TokenJson = "";
+    var_dump($response);
+
+    echo "<br>---------------------------<br><br>";
+
+    echo "<br>-----------user info----------------<br><br>";
+
+    $header = array(
+      'Content-Type: application/x-www-form-urlencoded',
+      'Accept: application/json',
+      'host: www.googleapis.com',
+      'Authorization: Bearer '.$access_token
+    );
 
 
-// 데이터 받기가 완료될 때 까지 대기하면 데이터를 받아 출력합니다.
-while( !feof($fsock) )
-{
-
-    // 한 줄 라인을 가지고 옵니다.
-    $line = fgets($fsock, 128);
-
-    // 아직 헤더는 아니지만, 헤더의 끝을 만난 경우, 헤더가 끝났음을 마킹하고, 종료합니다.
-    if( $line == "\r\n" && !$headPassed )
-    {
-        $headPassed = true;
-        continue;
-    }
-
-    // 헤더가 아닌 경우만, 값을 출력하도록 합니다.
-    if( $headPassed )
-    {
-        $TokenJson .= $line;
-    }
-
-}
-
-// 연결을 닫아 주도록 합니다.
-fclose( $fsock );
-
-// 받아 온 Token Json을 토큰 객체로 만들어 줍니다.
-$TokenObj = json_decode( $TokenJson );
-
-// 받아 온 토큰을 출랙해 줍니다.
-echo "받은 토큰은 아래와 같습니다.<br>";
-print_r( $TokenObj );
-echo "<br>---------------------------<br><br>";
+      $method = "GET";
 
 
+      $url = "https://www.googleapis.com/gmail/v1/users/me/profile";
 
-
-
-// [-- 아래는 유저 프로필 가지고 오기 관련 --]
-
-
-// 보낼 문장을 반들어 줍니다.
-$userinfor_req = "GET /gmail/v1/users/me/profile HTTP/1.1" . $endline
-. "Authorization: Bearer " . $TokenObj->access_token . $endline
-. "Host: www.googleapis.com" . $endline
-. "Connection: Close" . $endline
-
-. $endline
-
-
-;
-
-
-// 해당 구글 서버와 연결을 시도합니다.
-$fsock = @fsockopen( "ssl://www.googleapis.com", 443 );
-
-// 구글 서버에 접속 실패한 경우.
-if( !$fsock )
-{
-    echo "구글 서버에 접속 실패하였습니다.!";
-    exit;
-}
-
-// 데이터 보내기를 합니다.
-fwrite( $fsock, $userinfor_req );
-
-
-
-// 데이터 받기를 위해 필요한 값들을 선언합니다.
-$headPassed = false;
-$profileJson = "";
-
-
-while( !feof($fsock) )
-{
-
-    // 한 줄 라인을 가지고 옵니다.
-    $line = fgets($fsock, 128);
-
-    // 아직 헤더는 아니지만, 헤더의 끝을 만난 경우, 헤더가 끝났음을 마킹하고, 종료합니다.
-    if( $line == "\r\n" && !$headPassed )
-    {
-        $headPassed = true;
-        continue;
-    }
-
-    // 헤더가 아닌 경우만, 값을 출력하도록 합니다.
-    if( $headPassed )
-    {
-        $profileJson .= $line;
-    }
+      $ch = curl_init();                                 //curl 초기화
+      curl_setopt($ch, CURLOPT_URL, $url);               //URL 지정하기
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);    //요청 결과를 문자열로 반환 
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);      //connection timeout 10초 
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);   //원격 서버의 인증서가 유효한지 검사 안함 
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);   //호스트 이름을 체크 안함
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);  //메소드 지정하기
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $header);     //헤더 지정하기
+   
+      
+      $response2 = curl_exec($ch);
+      
+      var_dump($response2);
 
 }
 
 
-// 연결을 닫아 주도록 합니다.
-fclose( $fsock );
 
 
-
-// 가지고 온 유저 데이터를 출력하도록 합니다.
-echo "확인한 유저 정보는 아래와 같습니다.<br>";
-echo $profileJson;

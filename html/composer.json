@@ -1,0 +1,13 @@
+{
+    "require": {
+        "google/apiclient": "^2.12.1",
+        "vlucas/phpdotenv": "^5.5",
+        "google/auth": "^1.23",
+        "google/apiclient-services": "^0.272.1",
+        "firebase/php-jwt": "^6.3"
+    },
+    "config": {
+        "platform-check": false,
+        "php": "8.1.0"
+    }
+}

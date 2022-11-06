@@ -31,3 +31,8 @@ https://developer.wordpress.org/rest-api/using-the-rest-api/global-parameters/
 2. nextend social login register
 
 3. cognito
+
+
+1. php에서 lamdba 함수 직접 호출
+2. google회원가입 하고 cognito aws endpoint로 직접 등록 가능한지???
+3. 

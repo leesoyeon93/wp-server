@@ -884,3 +884,25 @@ function google_login(){
 
 	// header('Location: '.$addr);
 }
+
+
+function redirect_login_page() { 
+	$login_url = home_url( '/login' ); 
+	$url = basename($_SERVER['REQUEST_URI']); // 요청된 URL 얻기 
+	isset( $_REQUEST['redirect_to'] ) ? ( $url = "wp-login.php" ): 0; // 사용자가 wp-admin에 요청을 보내는 경우
+	 if( $url == "wp-login.php" && $_SERVER['REQUEST_METHOD'] == 'GET') { 
+			wp_redirect( $login_url ); 
+			exit;
+	} 
+} 
+add_action('init','redirect_login_page');
+
+function error_handler() { 
+	$login_page = home_url( '/login' ); 
+	global $errors; 
+	$err_codes = $errors->get_error_codes(); // WordPress 내장 오류 코드 가져오기 
+	$_SESSION["err_codes"] = $err_codes; 
+	wp_redirect( $login_page ); // 사용자를 같은 페이지에 유지합니다. 
+	exit; 
+} 
+add_filter( 'login_errors', 'error_handler');
